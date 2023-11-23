@@ -5,16 +5,23 @@
 */
 
 // State hook u import edin
-import React from "react";
+import React, { useState } from "react";
+
+import sahteVeri from "./sahte-veri";
 
 // Gönderiler (çoğul!) ve AramaÇubuğu bileşenlerini import edin, çünkü bunlar App bileşeni içinde kullanılacak
 // sahteVeri'yi import edin
 import "./App.css";
+import AramaCubugu from "./bilesenler/AramaCubugu/AramaCubugu";
+import Gonderiler from "./bilesenler/Gonderiler/Gonderiler";
 
 const App = () => {
   // Gönderi nesneleri dizisini tutmak için "gonderiler" adlı bir state oluşturun, **sahteVeri'yi yükleyin**.
   // Artık sahteVeri'ye ihtiyacınız olmayacak.
   // Arama çubuğunun çalışması için , arama kriterini tutacak başka bir state'e ihtiyacımız olacak.
+  const [gonderiler, setGonderiler] = useState(sahteVeri);
+  const [search, setSearch] = useState("");
+  const [begendiklerim, setBegendiklerim] = useState([]);
 
   const gonderiyiBegen = (gonderiID) => {
     /*
@@ -28,13 +35,28 @@ const App = () => {
         - gönderinin idsi "gonderiID" ile eşleşirse, istenen değerlerle yeni bir gönderi nesnesi döndürün.
         - aksi takdirde, sadece gönderi nesnesini değiştirmeden döndürün.
      */
+    const guncelGonderiler = gonderiler.map((item) => {
+      if (item.id == gonderiID && !begendiklerim.includes(gonderiID)) {
+        item.likes++;
+        setBegendiklerim([...begendiklerim, gonderiID]);
+      }
+      return item;
+    });
+    setGonderiler(guncelGonderiler);
   };
 
+  const filtrelenmisGonderiler = gonderiler.filter(
+    (item) => item.username.includes(search) || item.timestamps.includes(search)
+  );
   return (
     <div className="App">
-      App Çalışıyor
       {/* Yukarıdaki metni projeye başladığınızda silin*/}
       {/* AramaÇubuğu ve Gönderiler'i render etmesi için buraya ekleyin */}
+      <AramaCubugu search={search} setSearch={setSearch} />
+      <Gonderiler
+        gonderiler={gonderiler.filtrelenmisGonderiler}
+        gonderiyiBegen={gonderiyiBegen}
+      />
       {/* Her bileşenin hangi proplara ihtiyaç duyduğunu kontrol edin, eğer ihtiyaç varsa ekleyin! */}
     </div>
   );
